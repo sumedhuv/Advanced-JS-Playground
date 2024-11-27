@@ -1,0 +1,50 @@
+<html>
+  <head>
+    <title>Cookie Tracker</title>
+  </head>
+  <body style="background-color: lightblue; color: white">
+    <h1
+      style="
+        display: flex;
+        justify-content: center;
+        padding-top: 10;
+        font-size: 40;
+      "
+    >
+      Cookie Tracker
+    </h1>
+    <div
+      style="
+        display: flex;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 30;
+      "
+    >
+      <span style="padding-right: 10">Milk Chocolate Cookie</span>
+      <button
+        style="margin-right: 10; background-color: thistle; border: none"
+        onclick="decrement('MCC')"
+      >
+        -
+      </button>
+      <span style="padding-right: 10" id="MCC">0</span>
+      <button
+        style="margin-right: 10; background-color: thistle; border: none"
+        onclick="increment('MCC')"
+      >
+        +
+      </button>
+    </div>
+    <script>
+      const increment = (cookieType) => {
+        let value = document.getElementById(cookieType);
+        value.textContent = parseInt(value.textContent) + 1;
+      };
+      const decrement = (cookieType) => {
+        let value = document.getElementById(cookieType);
+        value.textContent = parseInt(value.textContent) - 1;
+      };
+    </script>
+  </body>
+</html>

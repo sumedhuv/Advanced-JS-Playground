@@ -271,3 +271,44 @@ printFarmInventory3(7, 8, 9);
 // const [jsonerror, json] ?= await response.json();
 // if (jsonerror) return console.error(parseError);
 // return json;
+
+function minm(a, b) {
+  return a < b ? a : b;
+}
+console.log(minm(20, 9));
+
+function recursiveOddEven(a) {
+  if (a < 0) {
+    return "invalid";
+  }
+  if (a == 0) {
+    return "Even";
+  }
+  if (a == 1) {
+    return "Odd";
+  }
+  return recursiveOddEven(a - 2);
+}
+console.log(recursiveOddEven(-1));
+
+function countBs(s) {
+  let counter = 0;
+  for (let i = 0; i < s.length; i++) {
+    if (s[i] == "B") {
+      counter += 1;
+    }
+  }
+  return counter;
+}
+console.log(countBs("SumedhBoxed"));
+
+function countChar(s, char) {
+  let counter = 0;
+  for (let i = 0; i < s.length; i++) {
+    if (s[i] == char) {
+      counter += 1;
+    }
+  }
+  return counter;
+}
+console.log(countChar("SumedhVichare", "e"));

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cookie Tracker</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      .cookie-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+      .cookie-item button {
+        margin: 0 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Cookie Tracker</h1>
+    <div id="cookieList">
+      <div class="cookie-item" data-cookie="Milk Chocolate Cookie">
+        <span>Milk Chocolate Cookie:</span>
+        <button onclick="decrement('Milk Chocolate Cookie')">-</button>
+        <span id="Milk Chocolate Cookie">0</span>
+        <button onclick="increment('Milk Chocolate Cookie')">+</button>
+      </div>
+      <div class="cookie-item" data-cookie="White Chocolate Cookie">
+        <span>White Chocolate Cookie:</span>
+        <button onclick="decrement('White Chocolate Cookie')">-</button>
+        <span id="White Chocolate Cookie">0</span>
+        <button onclick="increment('White Chocolate Cookie')">+</button>
+      </div>
+    </div>
+    <button onclick="downloadPDF()">Share as PDF</button>
+    <button onclick="copyToClipboard()">Copy to Clipboard</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script>
+      const increment = (cookieName) => {
+        const count = document.getElementById(cookieName);
+        count.textContent = parseInt(count.textContent) + 1;
+      };
+
+      const decrement = (cookieName) => {
+        const count = document.getElementById(cookieName);
+        const newValue = parseInt(count.textContent) - 1;
+        count.textContent = newValue < 0 ? 0 : newValue;
+      };
+
+      const downloadPDF = () => {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const cookieList = document.querySelectorAll(".cookie-item");
+        let y = 10;
+        cookieList.forEach((item) => {
+          const cookieName = item.getAttribute("data-cookie");
+          const count = document.getElementById(cookieName).textContent;
+          doc.text(`${cookieName}: ${count}`, 10, y);
+          y += 10;
+        });
+        doc.save("cookies.pdf");
+      };
+
+      const copyToClipboard = () => {
+        const cookieList = document.querySelectorAll(".cookie-item");
+        let text = "";
+        cookieList.forEach((item) => {
+          const cookieName = item.getAttribute("data-cookie");
+          const count = document.getElementById(cookieName).textContent;
+          text += `${cookieName}: ${count}\n`;
+        });
+        navigator.clipboard.writeText(text).then(() => {
+          alert("Copied to clipboard!");
+        });
+      };
+    </script>
+  </body>
+</html>
