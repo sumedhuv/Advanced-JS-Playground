@@ -1,0 +1,60 @@
+// //callback code: callback hell version
+// setTimeout(function () {
+//   console.log("hi");
+//   setTimeout(function () {
+//     console.log("hello");
+
+//     setTimeout(function () {
+//       console.log("hello there");
+//     }, 5000);
+//   }, 3000);
+// }, 1000);
+
+// //callback code alternate without callback hell
+// function callback() {
+//   console.log("Hello from promise");
+// }
+// setTimeoutPromisified(3000).then(callback);
+
+// function step3done() {
+//   console.log("Hello there");
+// }
+// function step2done() {
+//   console.log("Hello");
+//   setTimeout(step3done, 5000);
+// }
+// function step1done() {
+//   console.log("Hi");
+//   setTimeout(step2done, 3000);
+// }
+// setTimeout(step1done, 1000);
+
+//promisified callback
+// function main() {
+//   console.log("Hey there");
+// }
+// function setTimeoutPromisified(ms) {
+//   return new Promise((resolve) => setTimeout(resolve, ms));
+// }
+// setTimeoutPromisified(1000).then(main);
+
+const fs = require("fs");
+// const content = fs.readFile("a.txt", "utf-8", (err, data) => {
+//   console.log(data);
+// });)
+
+function readFilePromisified() {
+  return new Promise((resolve) =>
+    fs.readFile("a.txt", "utf-8", (err, data) => {
+      resolve(data);
+    })
+  );
+}
+function logFile(err, data) {
+  if (err) {
+    console.log(err);
+  } else {
+    console.log(data);
+  }
+}
+const content = readFilePromisified().then(logFile);
