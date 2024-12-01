@@ -43,18 +43,30 @@ const fs = require("fs");
 //   console.log(data);
 // });)
 
-function readFilePromisified() {
-  return new Promise((resolve) =>
+// function readFilePromisified() {
+//   return new Promise((resolve, reject) => {
+//     fs.readFile("a.txt", "utf-8", (err, data) => resolve(data));
+//   });
+// }
+
+// function logthefile(data) {
+//   console.log(data);
+// }
+
+// readFilePromisified().then(logthefile);
+
+function cleanFile(filename) {
+  return new Promise((resolve, reject) => {
     fs.readFile("a.txt", "utf-8", (err, data) => {
-      resolve(data);
-    })
-  );
+      let val = data;
+      val = val.trim();
+      fs.writeFile("a.txt", val, (err) => {
+        if (err) console.log(err);
+      });
+    });
+    resolve();
+  });
 }
-function logFile(err, data) {
-  if (err) {
-    console.log(err);
-  } else {
-    console.log(data);
-  }
-}
-const content = readFilePromisified().then(logFile);
+cleanFile("a.txt").then(() => {
+  console.log("File has been cleaned");
+});
