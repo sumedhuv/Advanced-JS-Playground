@@ -1,0 +1,38 @@
+<html>
+  <head>
+    <title>Todo List</title>
+  </head>
+  <body>
+    <h1>My Todo List</h1>
+    <div>
+      <input id="inp" type="text" />
+      <button onclick="addTodo()">Add Todo</button>
+    </div>
+    <div id="Todos"></div>
+
+    <script>
+      let count = 1;
+      function deletetodo(index) {
+        const element = document.getElementById(index);
+        const par = element.parentElement;
+        par.removeChild(element);
+      }
+      function addTodo() {
+        const val = document.querySelector("input").value;
+        const newTodo = document.createElement("div");
+        newTodo.setAttribute("id", count);
+
+        newTodo.innerHTML =
+          "<div>" +
+          count +
+          "." +
+          val +
+          '</div> <button onclick="deletetodo(' +
+          count +
+          ')"> delete </button>';
+        document.getElementById("Todos").appendChild(newTodo);
+        count = count + 1;
+      }
+    </script>
+  </body>
+</html>

@@ -4,51 +4,110 @@ const STATE = {
   PENDING: "pending",
 };
 class MyPromise {
-  #thenCBs = [];
-  #catchCBs = [];
+  #thenCbs = [];
+  #catchCbs = [];
   #state = STATE.PENDING;
   #value;
+  #onSuccessBind = this.#onSuccess.bind(this);
+  #onFailBind = this.#onFail.bind(this);
   constructor(cb) {
     try {
-      cb(this.#onSuccess, this.#onFail);
+      cb(this.#onSuccessBind, this.#onFailBind);
     } catch (e) {
-      this.#onFail(e);
+      this.#onFail;
     }
   }
   #runCallbacks() {
     if (this.#state === STATE.FULFILLED) {
-      this.#thenCBs.forEach((callback) => {
+      this.#thenCbs.forEach((callback) => {
         callback(this.#value);
       });
-      this.#thenCBs = [];
+      this.#thenCbs = [];
     }
+
     if (this.#state === STATE.REJECTED) {
-      this.#catchCBs.forEach((callback) => {
+      this.#catchCbs.forEach((callback) => {
         callback(this.#value);
       });
-      this.#catchCBs = [];
+      this.#catchCbs = [];
     }
   }
   #onSuccess(value) {
-    if (this.#state !== STATE.PENDING) return;
-    this.#value = value;
-    this.#state = State.FULFILLED;
-    this.#runCallbacks();
+    queueMicrotask(() => {
+      if (this.#state !== STATE.PENDING) return;
+      if (value instanceof MyPromise) {
+        value.then(this.#onSuccessBind, this.#onFailBind);
+        return;
+      }
+      this.#value = value;
+      this.#state = STATE.FULFILLED;
+      this.#runCallbacks();
+    });
   }
   #onFail(value) {
-    if (this.#state !== STATE.PENDING) return;
-    this.#value = value;
-    this.#state = State.REJECTED;
-    this.#runCallbacks();
+    queueMicrotask(() => {
+      if (this.#state !== STATE.PENDING) return;
+
+      if (value instanceof MyPromise) {
+        value.then(this.#onSuccessBind, this.#onFailBind);
+        return;
+      }
+      if (this.#catchCbs.length === 0) {
+        throw new UncaughtPromiseError(value);
+      }
+      this.#value = value;
+      this.#state = STATE.REJECTED;
+      this.#runCallbacks();
+    });
   }
-  then(thencb, catchcb) {
-    if (thencb != null) this.#thenCBs.push(cb);
-    if (catchcb != null) this.#catchCBs.push(cb);
-    this.#runCallbacks();
+  then(thenCb, catchCb) {
+    return new MyPromise((resolve, reject) => {
+      this.#thenCbs.push((result) => {
+        if (thenCb == null) {
+          resolve(result);
+          return;
+        }
+        try {
+          resolve(thenCb(result));
+        } catch (error) {
+          reject(error);
+        }
+      });
+      this.#catchCbs.push((result) => {
+        if (catchCb == null) {
+          reject(result);
+          return;
+        }
+        try {
+          resolve(catchCb(result));
+        } catch (error) {
+          reject(error);
+        }
+      });
+      this.#runCallbacks();
+    });
   }
   catch(cb) {
-    this.then(undefined, cb);
+    return this.then(undefined, cb);
+  }
+  finally(cb) {
+    return this.then(
+      (result) => {
+        cb();
+        return result;
+      },
+      (result) => {
+        cb();
+        throw result;
+      }
+    );
   }
 }
 
+class UncaughtPromiseError extends Error {
+  constructor(error) {
+    super(error);
+    this.stack = `(in promise) ${error.stack}`;
+  }
+}
 module.exports = MyPromise;
